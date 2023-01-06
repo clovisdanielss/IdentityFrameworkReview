@@ -84,6 +84,33 @@ namespace ComandaZap.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword(string code = null)
+        {
+            return code == null ? View("Error") : View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel resetPasswordViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await UserManager.FindByEmailAsync(resetPasswordViewModel.Email);
+                if(user == null)
+                {
+                    ModelState.AddModelError("Email", "Usuário não encontrado");
+                    return View();
+                }
+                var result = await UserManager.ResetPasswordAsync(user, resetPasswordViewModel.Code, resetPasswordViewModel.Password);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("ResetPasswordConfirmation");
+                }
+
+            }
+            return View(resetPasswordViewModel);
+        }
+
         public async Task<IActionResult> Register(string? returnUrl = null)
         {
             RegisterViewModel registerViewModel = new RegisterViewModel();

@@ -22,7 +22,7 @@ builder.Services.Configure<IdentityOptions>(o =>
 {
     o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(60);
     o.Lockout.MaxFailedAccessAttempts = 5;
-    o.SignIn.RequireConfirmedAccount = true;
+    //o.SignIn.RequireConfirmedAccount = true;
 });
 
 builder.Services.AddControllersWithViews();
@@ -43,6 +43,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllerRoute(
     name: "default",
