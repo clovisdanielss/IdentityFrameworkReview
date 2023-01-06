@@ -1,7 +1,10 @@
+using ComandaZap.Configuration;
 using ComandaZap.Data;
+using ComandaZap.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +27,14 @@ builder.Services.Configure<IdentityOptions>(o =>
     o.Lockout.MaxFailedAccessAttempts = 5;
     //o.SignIn.RequireConfirmedAccount = true;
 });
+
+builder.Services.AddAuthentication()
+    .AddGoogle(o =>
+    {
+        o.ClientId = builder.Configuration.GetSection("GClientId").Value ?? throw new ArgumentNullException(nameof(o.ClientId));
+        o.ClientSecret = builder.Configuration.GetSection("GClientSecret").Value ?? throw new ArgumentNullException(nameof(o.ClientSecret));
+        o.AuthorizationEndpoint += "?prompt=consent";
+    });
 
 builder.Services.AddControllersWithViews();
 

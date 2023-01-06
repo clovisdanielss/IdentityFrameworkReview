@@ -1,0 +1,26 @@
+﻿@using ComandaZap.ViewModel;
+@model ExternalLoginViewModel
+
+<form asp-controller="Account" asp-action="ExternalLoginConfirmation" method="post" role="form" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+    <h4>Associe sua conta @ViewData["ProviderDisplayName"].</h4>
+    <p>Você se autenticou pela sua conta @ViewData["ProviderDisplayName"]</p>
+    <div class="form-group">
+        <label asp-for="Email" class="col-md-2"></label>
+        <div class="col-md-10">
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="FullName" class="col-md-2"></label>
+        <div class="col-md-10">
+            <input asp-for="FullName" class="form-control" />
+            <span asp-validation-for="FullName" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-10">
+            <button type="submit" class="btn btn-success">Enviar</button>
+        </div>
+    </div>
+</form>

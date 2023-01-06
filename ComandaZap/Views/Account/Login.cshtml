@@ -1,9 +1,6 @@
 ﻿@using ComandaZap.ViewModel;
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+@using Microsoft.AspNetCore.Identity;
+@inject SignInManager<IdentityUser> signInManager;
 @model LoginViewModel
 <form asp-controller="Account" asp-action="Login" method="post" asp-route-returnurl="@Model.ReturnUrl" role="form">
     <h4>Entre com sua conta</h4>
@@ -46,4 +43,26 @@
         @*<a asp-action="ForgotPassword">Esqueceu a senha ?</a>*@
     </p>
 </form>
-
+@{
+    var schemes = await signInManager.GetExternalAuthenticationSchemesAsync();
+    var loginProviders = schemes.ToList();
+}
+@if (loginProviders.Count() > 0)
+{
+    <section>
+        <div class="col-md-4">
+            <h4>Use outro serviço para entrar</h4>
+            <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" role="form">
+                <div>
+                    <p>
+                        @foreach(var provider in loginProviders)
+                        {
+                            <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name"
+                                    title="Entre usando sua conta @provider.Name">@provider.Name</button>
+                        }
+                    </p>
+                </div>
+            </form>
+        </div>
+    </section>
+}

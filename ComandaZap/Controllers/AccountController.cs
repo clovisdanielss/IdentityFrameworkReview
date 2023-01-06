@@ -3,6 +3,8 @@ using ComandaZap.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using System.Security.Claims;
 
 namespace ComandaZap.Controllers
 {
@@ -27,6 +29,73 @@ namespace ComandaZap.Controllers
             LoginViewModel loginViewModel = new LoginViewModel();
             loginViewModel.ReturnUrl = returnUrl ?? Url.Content("~/");
             return View(loginViewModel);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExternalLogin(string provider, string? returnUrl = null)
+        {
+            var redirect = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
+            var properties = SignInManager.ConfigureExternalAuthenticationProperties(provider, redirect);
+            return Challenge(properties, provider);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null, string? remoteError = null)
+        {
+            if(remoteError != null)
+            {
+                ModelState.AddModelError(string.Empty, "Erro do provedor externo");
+                return View("Login");
+            }
+            var info = await SignInManager.GetExternalLoginInfoAsync();
+            if(info == null)
+            {
+                return RedirectToAction("Login");
+            }
+            var result = await SignInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+            if (result.Succeeded)
+            {
+                await SignInManager.UpdateExternalAuthenticationTokensAsync(info);
+                return RedirectToAction("Index", "Home");
+            }
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["ProviderDisplayName"] = info.ProviderDisplayName;
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            return View("ExternalLoginConfirmation", new ExternalLoginViewModel { Email = email });
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginViewModel model, string? returnUrl = null)
+        {
+            returnUrl ??= Url.Content("~/");
+            if (ModelState.IsValid)
+            {
+                var info = await SignInManager.GetExternalLoginInfoAsync();
+                if(info == null)
+                {
+                    return View("Error");
+                }
+                var user = new User { UserName = model.Email, Email = model.Email };
+                var result = await UserManager.CreateAsync(user);
+                if (result.Succeeded)
+                {
+                    result = await UserManager.AddLoginAsync(user, info);
+                    if (result.Succeeded)
+                    {
+                        await SignInManager.SignInAsync(user, isPersistent: false);
+                        await SignInManager.UpdateExternalAuthenticationTokensAsync(info);
+                        return LocalRedirect(returnUrl);
+                    }
+
+                }
+                ModelState.AddModelError("Email", "Usuário já existe");
+            }
+            ViewData["ReturnUrl"] = returnUrl;
+            return View(model);
         }
 
         [HttpPost]
