@@ -1,0 +1,49 @@
+﻿@using ComandaZap.ViewModel;
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model LoginViewModel
+<form asp-controller="Account" asp-action="Login" method="post" asp-route-returnurl="@Model.ReturnUrl" role="form">
+    <h4>Entre com sua conta</h4>
+    <hr />
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Email" class="col-md-2"></label>
+        <div class="col-md-10">
+            <input asp-for="Email" class="form-control"/>
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Password" class="col-md-2"></label>
+        <div class="col-md-10">
+            <input asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-10">
+            <div class="custom-checkbox">
+                <label asp-for="RememberMe">
+                    <input asp-for="RememberMe" />
+                    @Html.DisplayNameFor(m => m.RememberMe)
+                </label>
+
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-10">
+            <button type="submit" class="btn btn-success">Entrar</button>
+        </div>
+    </div>
+    <p>
+        <a asp-action="Register">Cadastrar uma conta ?</a>
+    </p>
+    <p>
+        @*<a asp-action="ForgotPassword">Esqueceu a senha ?</a>*@
+    </p>
+</form>
+
