@@ -35,10 +35,14 @@ namespace ComandaZap.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await SignInManager.PasswordSignInAsync(loginViewModel.Email, loginViewModel.Password, loginViewModel.RememberMe, lockoutOnFailure: false);
+                var result = await SignInManager.PasswordSignInAsync(loginViewModel.Email, loginViewModel.Password, loginViewModel.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
                     return RedirectToAction("Index", "Home");
+                }
+                if (result.IsLockedOut)
+                {
+                    ModelState.AddModelError(string.Empty, "Sua conta foi bloqueada por 60 segundos");
                 }
                 else
                 {
@@ -55,6 +59,31 @@ namespace ComandaZap.Controllers
             await SignInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotPasswordViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await UserManager.FindByEmailAsync(forgotPasswordViewModel.Email);
+                if (user == null)
+                {
+                    return RedirectToAction("ForgotPasswordConfirmation");
+                }
+                var code = await UserManager.GeneratePasswordResetTokenAsync(user);
+                var callback = Url.Action("ResetPassword", "Account", new { userId = user.Id, code }, protocol: HttpContext.Request.Scheme);
+                //TODO usar serviço para enviar email aqui. Remover a linha abaixo.
+                return RedirectToAction("Index", "Home");
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
         public async Task<IActionResult> Register(string? returnUrl = null)
         {
             RegisterViewModel registerViewModel = new RegisterViewModel();
@@ -80,7 +109,7 @@ namespace ComandaZap.Controllers
                     await SignInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);
                 }
-                else if(result.Errors.Any(err => err.Code == "DuplicateUserName"))
+                else if (result.Errors.Any(err => err.Code == "DuplicateUserName"))
                 {
                     ModelState.AddModelError("UserName", "Nome de usuário já existe");
                 }
@@ -88,7 +117,7 @@ namespace ComandaZap.Controllers
                 {
                     ModelState.AddModelError("Password", "Senha insuficientemente forte, usuário não criado");
                 }
-                
+
             }
             return View(registerViewModel);
         }

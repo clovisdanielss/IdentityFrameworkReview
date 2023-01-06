@@ -18,6 +18,13 @@ builder.Services
     .AddEntityFrameworkStores<ApplicationContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.Configure<IdentityOptions>(o =>
+{
+    o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(60);
+    o.Lockout.MaxFailedAccessAttempts = 5;
+    o.SignIn.RequireConfirmedAccount = true;
+});
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
