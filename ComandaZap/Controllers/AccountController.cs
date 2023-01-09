@@ -118,7 +118,7 @@ namespace ComandaZap.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Senha ou Email inválido(s).");
+                    ModelState.AddModelError(string.Empty, "Senha ou Email inválido(s)");
                 }
             }
             return View(loginViewModel);
