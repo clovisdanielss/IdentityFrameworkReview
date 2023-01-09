@@ -79,7 +79,7 @@ namespace ComandaZap.Controllers
                 {
                     return View("Error");
                 }
-                var user = new User { UserName = model.Email, Email = model.Email };
+                var user = new User { UserName = model.Email, Email = model.Email, FullName = model.FullName };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

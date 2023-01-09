@@ -17,7 +17,7 @@ builder.Services.AddDbContext<ApplicationContext>(e =>
     e.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services
-    .AddIdentity<IdentityUser, IdentityRole>()
+    .AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationContext>()
     .AddDefaultTokenProviders();
 
