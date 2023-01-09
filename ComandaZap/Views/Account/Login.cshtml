@@ -1,6 +1,6 @@
 ﻿@using ComandaZap.ViewModel;
 @using Microsoft.AspNetCore.Identity;
-@inject SignInManager<IdentityUser> signInManager;
+@inject SignInManager<User> signInManager;
 @model LoginViewModel
 <form asp-controller="Account" asp-action="Login" method="post" asp-route-returnurl="@Model.ReturnUrl" role="form">
     <h4>Entre com sua conta</h4>

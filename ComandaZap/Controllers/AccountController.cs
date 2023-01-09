@@ -10,12 +10,15 @@ namespace ComandaZap.Controllers
 {
     public class AccountController : Controller
     {
-        private UserManager<IdentityUser> UserManager;
-        private SignInManager<IdentityUser> SignInManager;
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        private readonly UserManager<User> UserManager;
+        private readonly SignInManager<User> SignInManager;
+        private readonly RoleManager<IdentityRole> RoleManager;
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager,
+            RoleManager<IdentityRole> roleManager)
         {
             UserManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             SignInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+            RoleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         }
 
         public IActionResult Index()
