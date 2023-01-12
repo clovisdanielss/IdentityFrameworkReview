@@ -1,6 +1,7 @@
-using ComandaZap.Configuration;
 using ComandaZap.Data;
 using ComandaZap.Models;
+using ComandaZap.Repository;
+using ComandaZap.Services.Commands;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +38,11 @@ builder.Services.AddAuthentication()
     });
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IRepository<User>, UserRepository>();
+builder.Services.AddTransient<GetAllUsersCommand>();
+builder.Services.AddTransient<DeleteUserCommand>();
+
 
 var app = builder.Build();
 

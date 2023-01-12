@@ -2,7 +2,7 @@
 
 namespace ComandaZap.Models
 {
-    public class User: IdentityUser
+    public class User: IdentityUser, IEntity
     {
         public string? FullName { get; set; }
     }

@@ -1,0 +1,35 @@
+﻿@using ComandaZap.ViewModel;
+@model IEnumerable<UserViewModel>
+<h1>Usuários</h1>
+<div asp-validation-summary="All" class="text-danger"></div>
+@if(Model.Count() > 0){
+    <table class="table table-striped border">
+        <tr class="table-secondary">
+            <th>
+                Id
+            </th>
+            <th>
+                Email
+            </th>
+            <th></th>
+        </tr>
+        @{
+            var list = Model.ToList();
+        }
+    @for(var index = 0; index < Model.Count(); index++){
+        <tr>
+            <td>@list[index].Id</td>
+            <td>@list[index].Email</td>
+            <td>
+                <div class="text-center">
+                    <form asp-action="Delete" asp-route-userId="@list[index].Id">
+                        <button type="submit" onclick="return confirm('Tem certeza que quer remover esse usuário?')" class="btn btn-danger">
+                            Deletar
+                        </button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+    }
+    </table>
+}

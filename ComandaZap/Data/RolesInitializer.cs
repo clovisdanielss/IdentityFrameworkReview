@@ -9,7 +9,8 @@ namespace ComandaZap.Data
     {
         public static void Initialize(ModelBuilder modelBuilder)
         {
-            string[] roles = { "Customer", "Company" };
+            
+            string[] roles = { "ApplicationOwner", "Customer", "Company" };
             foreach (string role in roles)
             {
                 modelBuilder.Entity<IdentityRole>().HasData(new IdentityRole(role));
