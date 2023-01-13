@@ -13,12 +13,15 @@ namespace ComandaZap.Controllers
 
         }
         [HttpGet]
+        [Authorize]
         public IActionResult Index([FromServices] GetAllUsersCommand service)
         {
             var users = service.Handle().Result;
             return View(users);
         }
         [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(string userId,[FromServices] DeleteUserCommand service)
         {
             var result = service.Handle(userId);

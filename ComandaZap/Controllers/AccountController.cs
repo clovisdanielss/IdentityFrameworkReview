@@ -35,6 +35,29 @@ namespace ComandaZap.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel, string returnUrl)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await SignInManager.PasswordSignInAsync(loginViewModel.Email, loginViewModel.Password, loginViewModel.RememberMe, lockoutOnFailure: true);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                if (result.IsLockedOut)
+                {
+                    ModelState.AddModelError(string.Empty, "Sua conta foi bloqueada por 60 segundos");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Senha ou Email inválido(s)");
+                }
+            }
+            return View(loginViewModel);
+        }
+
+        [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ExternalLogin(string provider, string? returnUrl = null)
@@ -57,7 +80,7 @@ namespace ComandaZap.Controllers
             {
                 return RedirectToAction("Login");
             }
-            var result = await SignInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+            var result = await SignInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, true);
             if (result.Succeeded)
             {
                 await SignInManager.UpdateExternalAuthenticationTokensAsync(info);
@@ -99,29 +122,6 @@ namespace ComandaZap.Controllers
             }
             ViewData["ReturnUrl"] = returnUrl;
             return View(model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel loginViewModel, string returnUrl)
-        {
-            if (ModelState.IsValid)
-            {
-                var result = await SignInManager.PasswordSignInAsync(loginViewModel.Email, loginViewModel.Password, loginViewModel.RememberMe, lockoutOnFailure: true);
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Index", "Home");
-                }
-                if (result.IsLockedOut)
-                {
-                    ModelState.AddModelError(string.Empty, "Sua conta foi bloqueada por 60 segundos");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Senha ou Email inválido(s)");
-                }
-            }
-            return View(loginViewModel);
         }
 
         [HttpPost]
@@ -205,7 +205,7 @@ namespace ComandaZap.Controllers
                 var result = await UserManager.CreateAsync(user, registerViewModel.Password);
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent: false);
+                    await SignInManager.SignInAsync(user, true);
                     return LocalRedirect(returnUrl);
                 }
                 else if (result.Errors.Any(err => err.Code == "DuplicateUserName"))

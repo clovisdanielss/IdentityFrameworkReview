@@ -22,7 +22,7 @@
             <td>@list[index].Email</td>
             <td>
                 <div class="text-center">
-                    <form asp-action="Delete" asp-route-userId="@list[index].Id">
+                    <form asp-action="Delete" asp-route-userId="@list[index].Id" method="post">
                         <button type="submit" onclick="return confirm('Tem certeza que quer remover esse usuário?')" class="btn btn-danger">
                             Deletar
                         </button>

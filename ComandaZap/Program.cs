@@ -26,8 +26,9 @@ builder.Services.Configure<IdentityOptions>(o =>
 {
     o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(60);
     o.Lockout.MaxFailedAccessAttempts = 5;
-    //o.SignIn.RequireConfirmedAccount = true;
 });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddAuthentication()
     .AddGoogle(o =>
@@ -59,8 +60,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization(); //ESSE MIDDLEWARE DEVE VIR DEPOIS DO DE AUTENTICAÇÃO!!!!
 
 app.MapControllerRoute(
     name: "default",
